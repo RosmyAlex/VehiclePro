@@ -31,11 +31,11 @@ public class CustomerBookingAuthService implements AuthService{
         {
             throw new RegistrationException("The Booking already exists");
         }
-        CustomerBooking newCustomerBooking=GetCustomerBooking(customerBookingDTO);
+        CustomerBooking newCustomerBooking=getCustomerBooking(customerBookingDTO);
         return customerBookingRepository.save(newCustomerBooking);
     }
 
-    private CustomerBooking GetCustomerBooking(CustomerBookingDTO customerBookingDTO)
+    private CustomerBooking getCustomerBooking(CustomerBookingDTO customerBookingDTO)
     {
         var newCustomerBooking=new CustomerBooking();
         newCustomerBooking.setVehicleId(customerBookingDTO.getVehicleId());
@@ -45,11 +45,11 @@ public class CustomerBookingAuthService implements AuthService{
         newCustomerBooking.setDate(customerBookingDTO.getDate());
         newCustomerBooking.setBookingStatus(BookingStatus.TEST_DRIVE_BOOKED);
         newCustomerBooking.setLeadScore(10);
-        newCustomerBooking.setSalesExecutiveId(SetAssignee());
+        newCustomerBooking.setSalesExecutiveId(setAssignee());
         return newCustomerBooking;
     }
 
-    private Long SetAssignee()
+    private Long setAssignee()
     {
         var listOfSEs=salesExecutiveRepository.findAll();
         if(listOfSEs.isEmpty())
@@ -58,26 +58,26 @@ public class CustomerBookingAuthService implements AuthService{
         }
 
         var lastCreatedBooking=customerBookingRepository.findTopByOrderByIdDesc();
-        Long se_Id;
+        Long seId;
         if(lastCreatedBooking.isPresent() && (long) listOfSEs.size() > 1)
         {
             //gets the id of the last assigned sales executive for a booking
-            se_Id=lastCreatedBooking.get().getSalesExecutiveId();
+            seId=lastCreatedBooking.get().getSalesExecutiveId();
 
             //gets the sales executive id which is other than the last assigned one. Randomly assigned
-            Long finalSe_Id = se_Id;
-            var nextAssignedSE=listOfSEs.stream().filter(se->!se.getId().equals(finalSe_Id)).findFirst();
+            Long finalSeId = seId;
+            var nextAssignedSE=listOfSEs.stream().filter(se->!se.getId().equals(finalSeId)).findFirst();
            if(nextAssignedSE.isPresent())
            {
-               se_Id=nextAssignedSE.get().getId();
+               seId=nextAssignedSE.get().getId();
            }
         }
         else
         {
             //if the booking is the very first one
-            se_Id=listOfSEs.get(0).getId();
+            seId=listOfSEs.get(0).getId();
         }
 
-        return se_Id;
+        return seId;
     }
 }
