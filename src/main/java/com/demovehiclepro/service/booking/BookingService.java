@@ -16,7 +16,7 @@ public class BookingService {
     CustomerBookingRepository customerBookingRepository;
     BookingStateFactory bookingStateFactory;
     NotificationStateFactory notificationStateFactory;
-    NotificationService notificationServiceValue;
+    NotificationService notificationService;
     public CustomerBooking updateBooking(long salesExecId, long bookingId, BookingStatus bookingStatus, Date date){
         var customerBooking=
                 customerBookingRepository.findByIdAndSalesExecutiveId(bookingId,salesExecId);
@@ -61,8 +61,8 @@ public class BookingService {
     }
     private NotificationService getNotificationService()
     {
-        if (notificationServiceValue == null)
-            notificationServiceValue = new NotificationService();
-        return notificationServiceValue;
+        if (notificationService == null)
+            notificationService = new NotificationService();
+        return notificationService;
     }
 }
